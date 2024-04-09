@@ -49,6 +49,7 @@
     <ItemGroup>
         <Compile Include="ClientUtilities.cs" />
         <Compile Include="EnforceAI.cs" />
+        <Compile Include="MenuManager.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
     </ItemGroup>
     <ItemGroup>

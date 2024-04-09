@@ -57,7 +57,6 @@ namespace EnforceAI.Server
                 if(status.Value)
                 {
                     Player player = Players[status.Key];
-                    Print(player.Name);
                     player.TriggerEvent("EnforceAI::client:PlayerBlips", positions);
                 }
             }

@@ -10,7 +10,7 @@ namespace EnforceAI.Client
 {
     public class EnforceAI : BaseScript
     {
-        internal bool IsOnDuty = false;
+        internal bool IsOnDuty;
         internal string Department = "LSPD";
         internal readonly Dictionary<string, Blip> playerBlips = new Dictionary<string, Blip>();
 
@@ -33,55 +33,10 @@ namespace EnforceAI.Client
             Print($"Version: {typeof(EnforceAI).Assembly.GetName().Version}");
             
             MenuController.MenuAlignment = MenuController.MenuAlignmentOption.Right;
-            
-            Menu mainMenu = new Menu("EnforceAI Menu", "The main menu for EnforceAI");
-            MenuController.AddMenu(mainMenu);
-            
-            MenuCheckboxItem dutyCheck = new MenuCheckboxItem("Set duty status", "Set your duty status for EnforceAI");
-            dutyCheck.LeftIcon = MenuItem.Icon.BRIEFCASE;
-            dutyCheck.Checked = IsOnDuty;
 
-            mainMenu.AddMenuItem(dutyCheck);
+            Menu mainMenu = MenuManager.CreateMainMenu(this);
 
-            MenuItem debugMenuItem = new MenuItem("~o~Debug Options~s~", "EnforceAI debug options");
-            debugMenuItem.LeftIcon = MenuItem.Icon.WARNING;
-            
-            mainMenu.AddMenuItem(debugMenuItem);
-
-            Menu debugMenu = new Menu("EnforceAI Debug Menu", "Debug Options");
-
-            MenuItem toggleDutyStatus = new MenuItem("Toggle Duty Status", "Toggle your duty status");
-            toggleDutyStatus.LeftIcon = MenuItem.Icon.BRIEFCASE;
-            
-            debugMenu.AddMenuItem(toggleDutyStatus);
-            
-            MenuItem calloutNotification = new MenuItem("Trigger Test Callout Notification", "Triggers a callout notification for testing");
-            calloutNotification.LeftIcon = MenuItem.Icon.MISSION_STAR;
-            
-            debugMenu.AddMenuItem(calloutNotification);
-            
-            debugMenu.OnItemSelect += (menu, selectedItem, itemIndex) =>
-            {
-                if (selectedItem == toggleDutyStatus)
-                {
-                    SetDutyStatus();
-                } else if (selectedItem == calloutNotification)
-                {
-                    ClientUtilities.Notification("~b~Type:~s~~o~ Officer in Distress (10-99)~s~~n~~g~Location:~s~ ~p~Del Perro Freeway, Los Santos~s~", true, 140, "CHAR_CALL911", true, 0, Department + " Dispatch", "Call Received");
-                }
-            };
-            
-            MenuController.AddSubmenu(mainMenu, debugMenu);
-            
-            MenuController.BindMenuItem(mainMenu, debugMenu, debugMenuItem);
-
-            mainMenu.OnCheckboxChange += (menu, checkItem, itemIndex, newState) =>
-            {
-                if(checkItem == dutyCheck)
-                {
-                    SetDutyStatus(newState);
-                }
-            };
+            Menu sceneMenu = MenuManager.CreateSceneMenu(this);
 
             RegisterCommand("EnforceAI::client:OpenMenu", new Action(() =>
             {
@@ -94,11 +49,25 @@ namespace EnforceAI.Client
                     mainMenu.OpenMenu();
                 }
             }), false);
+
+            RegisterCommand("EnforceAI::client:OpenSceneMenu", new Action(() =>
+            {
+                if (MenuController.IsAnyMenuOpen())
+                {
+                    MenuController.CloseAllMenus();
+                }
+                else
+                {
+                    sceneMenu.OpenMenu();
+                }
+            }), false);
             
-            RegisterKeyMapping("EnforceAI::client:OpenMenu", "Open the debug menu", "keyboard", "END");
+            RegisterKeyMapping("EnforceAI::client:OpenSceneMenu", "Open the scene menu", "keyboard", "HOME");
+            
+            RegisterKeyMapping("EnforceAI::client:OpenMenu", "Open the main menu", "keyboard", "END");
         }
 
-        private void SetDutyStatus(bool? status = null)
+        internal void SetDutyStatus(bool? status = null)
         {
             if (!status.HasValue) status = !IsOnDuty;
             IsOnDuty = status.Value;
@@ -115,7 +84,6 @@ namespace EnforceAI.Client
                 {
                     Vector4 parent = (Vector4) position.Value;
                     locationBlip.Position = (Vector3)parent;
-                    // ReSharper disable once PossibleInvalidCastException
                     locationBlip.Rotation = (int)parent.W;
                 }
                 else
@@ -123,16 +91,7 @@ namespace EnforceAI.Client
                     Vector4 parent = (Vector4) position.Value;
                     Vector3 pos = (Vector3) parent;
                     int rot = (int)parent.W;
-                    playerBlips[position.Key] = new Blip(AddBlipForCoord(pos.X, pos.Y, pos.Z));
-                    SetBlipSprite(playerBlips[position.Key].Handle, 399);
-                    SetBlipDisplay(playerBlips[position.Key].Handle, 2);
-                    SetBlipScale(playerBlips[position.Key].Handle, 0.5f);
-                    SetBlipColour(playerBlips[position.Key].Handle, 38);
-                    SetBlipRotation(playerBlips[position.Key].Handle, rot);
-                    SetBlipAsShortRange(playerBlips[position.Key].Handle, true);
-                    BeginTextCommandSetBlipName("STRING");
-                    AddTextComponentString(position.Key);
-                    EndTextCommandSetBlipName(playerBlips[position.Key].Handle);
+                    playerBlips[position.Key] = ClientUtilities.CreateBlip(pos, rot, position.Key, 38, 0.5f, 2, 399);
                 }
             }
         }
