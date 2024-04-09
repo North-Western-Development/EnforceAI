@@ -18,16 +18,15 @@ namespace EnforceAI.Client
         
         public EnforceAI()
         {
-            EventHandlers["onResourceStart"] += new Action<string>(ScriptInitialization);
             EventHandlers["EnforceAI::client:SetDuty"] += new Action<bool?>(SetDutyStatus);
             EventHandlers["EnforceAI::client:PlayerBlips"] += new Action<ExpandoObject>(PlayerPositionList);
             
-            ScriptInitialization(GetCurrentResourceName());
+            ScriptInitialization();
         }
         
-        private void ScriptInitialization(string resource)
+        private void ScriptInitialization()
         {
-            if (hasInitialized || resource != GetCurrentResourceName()) return;
+            if (hasInitialized) return;
             hasInitialized = true;
             Print("======================== ENFORCEAI ========================");
             Print("Developed by North Western Development and Contributors");

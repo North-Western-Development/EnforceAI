@@ -12,10 +12,10 @@ namespace EnforceAI.Server
     public class EnforceAI : BaseScript
     {
         private readonly Dictionary<string, bool> dutyStatus = new Dictionary<string, bool>();
+        private bool hasInitialized;
         
         public EnforceAI()
         {
-            EventHandlers["onResourceStart"] += new Action<string>(ScriptInitialization);
             EventHandlers["EnforceAI::server:Duty"] += new Action<Player, bool>(PlayerDutyStatus);
             EventHandlers["playerDropped"] += new Action<Player>(([FromSource] Player player) =>
             {
@@ -24,11 +24,14 @@ namespace EnforceAI.Server
             });
 
             Tick += PlayerBlips;
+            
+            ScriptInitialization();
         }
         
-        private void ScriptInitialization(string resource)
+        private void ScriptInitialization()
         {
-            if (resource != GetCurrentResourceName()) return;
+            if (hasInitialized) return;
+            hasInitialized = true;
             Print("======================== ENFORCEAI ========================");
             Print("Developed by North Western Development and Contributors");
             Print($"Version: {typeof(EnforceAI).Assembly.GetName().Version}");
