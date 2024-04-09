@@ -9,9 +9,10 @@
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>EnforceAI.Client</RootNamespace>
-        <AssemblyName>EnforceAI.Client</AssemblyName>
-        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <AssemblyName>EnforceAI.Client.net</AssemblyName>
+        <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,14 +34,31 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="CitizenFX.Core.Client, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\CitizenFX.Core.Client.1.0.7878\lib\net45\CitizenFX.Core.Client.dll</HintPath>
+        </Reference>
+        <Reference Include="MenuAPI">
+          <HintPath>..\..\..\..\Users\JacksonAbney\RiderProjects\MenuAPI-Updated\MenuAPI\bin\Release FiveM\net452\MenuAPI.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CSharp" />
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="System.Data"/>
         <Reference Include="System.Xml"/>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Class1.cs"/>
+        <Compile Include="ClientUtilities.cs" />
+        <Compile Include="EnforceAI.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="packages.config" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\EnforceAI.Common\EnforceAI.Common.csproj">
+        <Project>{b99f4762-0d94-4974-8715-22ac3c90c2d9}</Project>
+        <Name>EnforceAI.Common</Name>
+      </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

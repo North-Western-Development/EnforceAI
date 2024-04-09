@@ -6,9 +6,14 @@ description 'TBA'
 version '0.0.1'
 
 client_scripts {
-
+    'client/EnforceAI.Client.net.dll'
 }
 
 server_script {
+    'server/EnforceAI.Server.net.dll'
+}
 
+files {
+    'EnforceAI.Common.dll',
+    'MenuAPI.dll'
 }
