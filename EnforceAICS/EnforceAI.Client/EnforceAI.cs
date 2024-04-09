@@ -140,7 +140,7 @@ namespace EnforceAI.Client
                     Vector4 parent = (Vector4) position.Value;
                     Vector3 pos = (Vector3) parent;
                     int rot = (int)parent.W;
-                    playerBlips[position.Key] = ClientUtilities.CreateBlip(pos, rot, position.Key, 38, 0.5f, 2, 399);
+                    playerBlips[position.Key] = ClientUtilities.CreateBlip(pos, rot, position.Key, 38, 0.5f, 2, 399, false);
                 }
             }
         }

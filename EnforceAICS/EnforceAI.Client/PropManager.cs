@@ -51,10 +51,10 @@ internal static class PropManager
                 Vector3 forward = GetEntityForwardVector(PlayerPedId());
 
                 currentPropHandle = CreateObject(GetHashKey(SpawnModel), pos.X + (forward.X * 1.5f), pos.Y + (forward.Y * 1.5f), pos.Z, true, false, false);
-                NetworkSetEntityVisibleToNetwork(currentPropHandle, false);
                 PlaceObjectOnGroundProperly(currentPropHandle);
                 SetEntityCollision(currentPropHandle, false, false);
                 SetEntityAlpha(currentPropHandle, 102, 0);
+                NetworkSetEntityInvisibleToNetwork(NetworkGetNetworkIdFromEntity(currentPropHandle), true);
                 propSpawned = true;
                 return;
             }
@@ -88,6 +88,11 @@ internal static class PropManager
             DeleteObject(ref currentPropHandle);
             currentPropHandle = 0;
             propSpawned = false;
+            await BaseScript.Delay(250);
+        }
+        else
+        {
+            await BaseScript.Delay(250);
         }
     }
     
@@ -103,7 +108,7 @@ internal static class PropManager
         }
         SetEntityCollision(currentPropHandle, true, true);
         SetEntityAlpha(currentPropHandle, 255, 0);
-        NetworkSetEntityVisibleToNetwork(currentPropHandle, true);
+        NetworkSetEntityInvisibleToNetwork(NetworkGetNetworkIdFromEntity(currentPropHandle), false);
         propSpawned = false;
         BaseScript.TriggerServerEvent("EnforceAI::server:AddPropToList", NetworkGetNetworkIdFromEntity(currentPropHandle));
         myProps.Add(currentPropHandle);
