@@ -1,5 +1,7 @@
-﻿using CitizenFX.Core;
+﻿using System.Threading.Tasks;
+using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
+using static EnforceAI.Common.Utilities;
 
 namespace EnforceAI.Client
 {
@@ -35,6 +37,16 @@ namespace EnforceAI.Client
             EndTextCommandSetBlipName(blip.Handle);
 
             return blip;
+        }
+
+        internal static async Task RequestModelClient(uint model)
+        {
+            if (!IsModelValid(model)) return;
+            RequestModel(model);
+            while (!HasModelLoaded(model))
+            {
+                await BaseScript.Delay(1);
+            }
         }
     }
 }

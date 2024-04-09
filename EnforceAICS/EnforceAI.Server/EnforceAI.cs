@@ -11,6 +11,7 @@ namespace EnforceAI.Server
 {
     public class EnforceAI : BaseScript
     {
+        private readonly List<int> props = new List<int>(); 
         private readonly Dictionary<string, bool> dutyStatus = new Dictionary<string, bool>();
         private bool hasInitialized;
         
@@ -21,6 +22,23 @@ namespace EnforceAI.Server
             {
                 if(!dutyStatus.ContainsKey(player.Name)) return;
                 dutyStatus.Remove(player.Name);
+            });
+            EventHandlers["EnforceAI::server:AddPropToList"] += new Action<int>((netid) =>
+            {
+                props.Add(netid);
+            });
+            EventHandlers["onResourceStop"] += new Action<string>((resource) =>
+            {
+                if(resource != GetCurrentResourceName()) return;
+
+                foreach (int propNetId in props)
+                {
+                    int prop = NetworkGetEntityFromNetworkId(propNetId);
+                    if (DoesEntityExist(prop))
+                    {
+                        DeleteEntity(prop);
+                    }
+                }
             });
 
             Tick += PlayerBlips;
