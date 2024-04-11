@@ -15,7 +15,7 @@ namespace EnforceAI.Client
         internal bool IsOnDuty;
         internal string Department = "LSPD";
         internal readonly Dictionary<string, Blip> playerBlips = new Dictionary<string, Blip>();
-
+        
         private bool hasInitialized;
         
         public EnforceAI()
@@ -24,10 +24,23 @@ namespace EnforceAI.Client
             
             EventHandlers["EnforceAI::client:SetDuty"] += new Action<bool?>(SetDutyStatus);
             EventHandlers["EnforceAI::client:PlayerBlips"] += new Action<ExpandoObject>(PlayerPositionList);
+            /*EventHandlers["EnforceAI::client:SetVehicleMaxSpeed"] += new Action<int, float>((vehNetId, speed) =>
+            {
+                int veh = NetworkGetEntityFromNetworkId(vehNetId);
+                if(IsPedAPlayer(GetPedInVehicleSeat(veh, -1))) return;
+                SetEntityMaxSpeed(veh, speed);
+                if (speed == 0)
+                {
+                    ClearVehicleTasks(veh);
+                    TaskVehicleTempAction(GetPedInVehicleSeat(veh, -1), veh, 1, 10);
+                }
+
+                TaskVehicleDriveWander(GetPedInVehicleSeat(veh, -1), veh, speed, 447);
+            });*/
             EventHandlers["onResourceStop"] += new Action<string>((resource) =>
             {
                 if(resource != GetCurrentResourceName()) return;
-
+                
                 PropManager.CleanUp();
             });
 
@@ -50,6 +63,8 @@ namespace EnforceAI.Client
 
             Menu sceneMenu = MenuManager.CreateSceneMenu();
 
+            Menu dispatchMenu = MenuManager.CreateDispatchMenu();
+
             RegisterCommand("EnforceAI::client:OpenMenu", new Action(() =>
             {
                 if (MenuController.IsAnyMenuOpen())
@@ -70,9 +85,33 @@ namespace EnforceAI.Client
                 }
                 else
                 {
+                    if (!IsOnDuty)
+                    {
+                        ClientUtilities.Tooltip("~o~You must be on duty to access this menu!");
+                        return;
+                    }
                     sceneMenu.OpenMenu();
                 }
             }), false);
+            
+            RegisterCommand("EnforceAI::client:OpenDispatchMenu", new Action(() =>
+            {
+                if (MenuController.IsAnyMenuOpen())
+                {
+                    MenuController.CloseAllMenus();
+                }
+                else
+                {
+                    if (!IsOnDuty)
+                    {
+                        ClientUtilities.Tooltip("~o~You must be on duty to access this menu!");
+                        return;
+                    }
+                    dispatchMenu.OpenMenu();
+                }
+            }), false);
+            
+            RegisterKeyMapping("EnforceAI::client:OpenDispatchMenu", "Open the dispatch menu", "keyboard", "G");
             
             RegisterKeyMapping("EnforceAI::client:OpenSceneMenu", "Open the scene menu", "keyboard", "HOME");
             

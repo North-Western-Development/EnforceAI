@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
@@ -11,13 +12,15 @@ namespace EnforceAI.Server
 {
     public class EnforceAI : BaseScript
     {
-        private readonly List<int> props = new List<int>(); 
+        private readonly List<int> props = new List<int>();
+        private readonly List<SpeedZone> speedZones = new List<SpeedZone>();
         private readonly Dictionary<string, bool> dutyStatus = new Dictionary<string, bool>();
         private bool hasInitialized;
         
         public EnforceAI()
         {
             EventHandlers["EnforceAI::server:Duty"] += new Action<Player, bool>(PlayerDutyStatus);
+            //EventHandlers["EnforceAI::server:CreateSpeedZone"] += new Action<Player, string, string>(CreateSpeedZone);
             EventHandlers["playerDropped"] += new Action<Player>(([FromSource] Player player) =>
             {
                 if(!dutyStatus.ContainsKey(player.Name)) return;
@@ -84,5 +87,20 @@ namespace EnforceAI.Server
         {
             dutyStatus[client.Name] = status;
         }
+
+        /*private void CreateSpeedZone([FromSource] Player client, string maxSpeed, string zoneSize)
+        {
+            Vector3 position = GetEntityCoords(client.Character.Handle);
+            
+            speedZones.Add(new SpeedZone()
+            {
+                Center = position,
+                MaxSpeed = float.Parse(maxSpeed) * 2.236936f,
+                Radius = float.Parse(zoneSize),
+                Owner = client
+            });
+            
+            TriggerClientEvent("EnforceAI::client:NewSpeedZone", speedZones.Last());
+        }*/
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
 using static EnforceAI.Common.Utilities;
@@ -47,6 +48,41 @@ namespace EnforceAI.Client
             {
                 await BaseScript.Delay(1);
             }
+        }
+
+        internal static async Task<Ped?> GetNearestDownedOrInjuredPed(Vector3 coords, float maxDistanceSqrd, bool allowPlayer = false)
+        {
+            float nearestDistance = float.MaxValue;
+            Ped? nearestPed = null;
+
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                await BaseScript.Delay(1);
+                if(ped == null) continue;
+                if(ped.IsPlayer && !allowPlayer) continue;
+                if(ped.Position.DistanceToSquared(coords) > maxDistanceSqrd) continue;
+                if(ped.HealthFloat > (ped.MaxHealthFloat * 0.75f) && !ped.IsDead) continue;
+                if(ped.Position.DistanceToSquared(coords) > nearestDistance && nearestPed != null) continue;
+                nearestPed = ped;
+            }
+            return nearestPed;
+        }
+        
+        internal static async Task<List<Ped>> GetAllNearbyDownedOrInjuredPed(Vector3 coords, float maxDistanceSqrd, bool allowPlayer = false, int? ignoreHandle = null)
+        {
+            List<Ped> peds = new List<Ped>();
+            
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                await BaseScript.Delay(3);
+                if(ped == null) continue;
+                if(ignoreHandle != null && ped.Handle == ignoreHandle) continue;
+                if(ped.IsPlayer && !allowPlayer) continue;
+                if(ped.Position.DistanceToSquared(coords) > maxDistanceSqrd) continue;
+                if(ped.HealthFloat > (ped.MaxHealthFloat * 0.75f) && !ped.IsDead) continue;
+                peds.Add(ped);
+            }
+            return peds;
         }
     }
 }
