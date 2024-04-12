@@ -182,7 +182,6 @@ namespace EnforceAI.Client
 
             Action<string> callback = (inputData) =>
             {
-                Print("CALL");
                 hasCalled = true;
                 data = inputData;
             };

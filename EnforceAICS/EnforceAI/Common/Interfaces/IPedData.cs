@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using CitizenFX.Core;
 using EnforceAI.Common.DataHolders;
+using EnforceAI.Common.Types;
 using Newtonsoft.Json;
 using Gender = EnforceAI.Common.Enums.Gender;
 
-namespace EnforceAI.Common.Types;
+namespace EnforceAI.Common.Interfaces;
 
 public interface IPedData
 {

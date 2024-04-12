@@ -164,7 +164,12 @@ internal static class MenuManager
                 }
                 
                 Task<string?> callbackRegistration = EnforceAI.RegisterAwaitableCallback("ReturnPedData:" + ped.NetworkId, 5000);
-                BaseScript.TriggerServerEvent("EnforceAI::server:GetPedData", ped.NetworkId);
+                BaseScript.TriggerServerEvent("EnforceAI::server:GetPedData", ped.NetworkId, ped.Gender switch
+                {
+                    Gender.Male => Common.Enums.Gender.Male,
+                    Gender.Female => Common.Enums.Gender.Female,
+                    _ => Common.Enums.Gender.Other
+                });
                 string? pedDataResult = await callbackRegistration;
 
                 if (pedDataResult == null)
@@ -172,8 +177,7 @@ internal static class MenuManager
                     ClientUtilities.Tooltip("~r~A timeout occurred resulting in a timeout!~s~");
                     return;
                 }
-
-                Debug.WriteLine(pedDataResult);
+                
                 try
                 {
                     PedData data = JsonConvert.DeserializeObject<PedData>(pedDataResult);

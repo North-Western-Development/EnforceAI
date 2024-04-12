@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EnforceAI.Common.DataHolders;
+using EnforceAI.Common.Interfaces;
 using EnforceAI.Common.Types;
 using Gender = EnforceAI.Common.Enums.Gender;
 

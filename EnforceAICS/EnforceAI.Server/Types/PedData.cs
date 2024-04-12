@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using CitizenFX.Core;
-using EnforceAI.Common;
+using CitizenFX.Core; 
 using EnforceAI.Common.Enums;
 using EnforceAI.Common.DataHolders;
+using EnforceAI.Common.Interfaces;
 using EnforceAI.Common.Types;
 
 namespace EnforceAI.Server.Types;
@@ -32,10 +32,15 @@ public class PedData : IPedData
     
     private static string[] middleInitialTable = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
     
-    internal PedData(Names names)
+    internal PedData(Names names, Gender gender)
     {
         Random gen = new Random();
-        Gender = (Gender) gen.Next(0, 2);
+        if (gen.Next(0, 100) < 4)
+        {
+            Gender = (Gender)gen.Next(0, 2);
+        }
+
+        Gender = gender;
         FirstName = GenerateName(names, Gender, true);
         MiddleInitial = middleInitialTable[new Random().Next(0, 25)];
         LastName = GenerateName(names);

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using EnforceAI.Common;
+using EnforceAI.Common.Enums;
 using EnforceAI.Server.Types;
 using Newtonsoft.Json;
 using static CitizenFX.Core.Native.API;
@@ -16,6 +17,9 @@ namespace EnforceAI.Server
 {
     public class EnforceAI : BaseScript
     {
+        internal static EnforceAI Instance;
+        internal static ExportDictionary Ex;
+        
         private readonly List<int> props = new List<int>();
         private readonly List<SpeedZone> speedZones = new List<SpeedZone>();
         private readonly Dictionary<string, bool> dutyStatus = new Dictionary<string, bool>();
@@ -23,6 +27,9 @@ namespace EnforceAI.Server
         
         public EnforceAI()
         {
+            Instance = this;
+            Ex = Exports;
+            
             EventHandlers["EnforceAI::server:Duty"] += new Action<Player, bool>(PlayerDutyStatus);
             //EventHandlers["EnforceAI::server:CreateSpeedZone"] += new Action<Player, string, string>(CreateSpeedZone);
             EventHandlers["playerDropped"] += new Action<Player>(([FromSource] Player player) =>
@@ -47,19 +54,14 @@ namespace EnforceAI.Server
                     }
                 }
             });
-            EventHandlers["EnforceAI::server:GetPedData"] += new Action<Player, int>(([FromSource] client, netId) =>
+            EventHandlers["EnforceAI::server:GetPedData"] += new Action<Player, int, Gender>(async ([FromSource] client, netId, gender) =>
             {
                 Ped ped = (Ped)Entity.FromNetworkId(netId);
                 if (ped == null)
                 {
                     TriggerClientEvent(client, "EnforceAI::client:ReturnPedData:" + netId, "NO SUCH NETWORK ID");
                 };
-                PedData data = new PedData(Configs.Names);
-                data.AssociatePed(ped);
-                Print("EnforceAI::client:ReturnPedData:" + netId);
-                File.WriteAllText(GetResourcePath(GetCurrentResourceName()) + "\\test.txt", JsonConvert.SerializeObject(data));
-                PedData test = JsonConvert.DeserializeObject<PedData>(JsonConvert.SerializeObject(data));
-                Print(test);
+                PedData data = await PedDataManager.GetDataForPed(ped, gender);
                 TriggerClientEvent(client, "EnforceAI::client:ReturnPedData:" + netId, JsonConvert.SerializeObject(data));
             });
 
@@ -68,7 +70,7 @@ namespace EnforceAI.Server
             ScriptInitialization();
         }
         
-        private void ScriptInitialization()
+        private async void ScriptInitialization()
         {
             if (hasInitialized) return;
             hasInitialized = true;
@@ -76,14 +78,12 @@ namespace EnforceAI.Server
             Print("Developed by North Western Development and Contributors");
             Print($"Version: {typeof(EnforceAI).Assembly.GetName().Version}");
 
+            DBConnector.InitializeDBConnector();
+            
             Configs.Names = JsonConvert.DeserializeObject<Names>(File.ReadAllText(GetResourcePath(GetCurrentResourceName()) + "\\configs\\names.json"));
 
             Configs.Names.FirstNames.Male = Configs.Names.FirstNames.Male.Concat(Configs.Names.FirstNames.Neutral).ToList();
             Configs.Names.FirstNames.Female = Configs.Names.FirstNames.Female.Concat(Configs.Names.FirstNames.Neutral).ToList();
-            
-            PedData data = new PedData(Configs.Names);
-            
-            Print(data);
         }
 
         private async Task PlayerBlips()
