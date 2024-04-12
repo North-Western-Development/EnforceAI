@@ -37,13 +37,29 @@
         <Reference Include="CitizenFX.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <HintPath>..\packages\CitizenFX.Core.1.3.0\lib\net45\CitizenFX.Core.dll</HintPath>
         </Reference>
+        <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+          <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+        </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="System.Data"/>
         <Reference Include="System.Xml"/>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="DataHolders\Licenses.cs" />
+        <Compile Include="Enums\Gender.cs" />
+        <Compile Include="Enums\LicenseStatus.cs" />
+        <Compile Include="Interfaces\ILicense.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="Types\DriversLicense.cs" />
+        <Compile Include="Types\FirstNames.cs" />
+        <Compile Include="Types\FishingLicense.cs" />
+        <Compile Include="Types\HuntingLicense.cs" />
+        <Compile Include="Types\Names.cs" />
+        <Compile Include="Types\PedData.cs" />
+        <Compile Include="Types\PilotsLicense.cs" />
+        <Compile Include="Types\VehicleData.cs" />
+        <Compile Include="Types\WeaponsLicense.cs" />
         <Compile Include="Utilities.cs" />
     </ItemGroup>
     <ItemGroup>

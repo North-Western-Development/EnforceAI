@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using EnforceAI.Common;
+using Newtonsoft.Json;
 using static CitizenFX.Core.Native.API;
 using static EnforceAI.Common.Utilities;
 
@@ -56,6 +59,15 @@ namespace EnforceAI.Server
             Print("======================== ENFORCEAI ========================");
             Print("Developed by North Western Development and Contributors");
             Print($"Version: {typeof(EnforceAI).Assembly.GetName().Version}");
+
+            Configs.Names = JsonConvert.DeserializeObject<Names>(File.ReadAllText( GetResourcePath(GetCurrentResourceName()) + "\\configs\\names.json"));
+
+            Configs.Names.FirstNames.Male = Configs.Names.FirstNames.Male.Concat(Configs.Names.FirstNames.Neutral).ToList();
+            Configs.Names.FirstNames.Female = Configs.Names.FirstNames.Female.Concat(Configs.Names.FirstNames.Neutral).ToList();
+            
+            PedData data = new PedData(Configs.Names);
+            
+            Print(data.GetName() + " - " + data.Gender + " - " + data.DateOfBirth.ToString("dd MMMM yyyy") + " - " + data.Age);
         }
 
         private async Task PlayerBlips()

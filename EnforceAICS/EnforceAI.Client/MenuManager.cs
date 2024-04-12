@@ -13,6 +13,12 @@ namespace EnforceAI.Client;
 internal static class MenuManager
 {
     internal static MenuCheckboxItem DutyCheck;
+
+    internal static bool MedicalServicesActive = false;
+    internal static bool MedicalServicesShouldCancel = false;
+    
+    private static Vehicle? ambulance;
+    private static Ped? paramedic;
     
     internal static Menu CreateMainMenu()
     {
@@ -276,147 +282,132 @@ internal static class MenuManager
         {
             if (item == callAmbulance)
             {
-                int saved = 0;
-                int notSaved = 0;
+                if (!MedicalServicesActive)
+                {
+                    MedicalServicesActive = true;
+                    item.Text = "~r~Cancel Medical Services~s~";
+                    item.Description = "Cancel your paramedic request";
+                    
+                    int saved = 0;
+                    int notSaved = 0;
 
-                Ped? closestDownedOrInjuredPed = await ClientUtilities.GetNearestDownedOrInjuredPed(Game.PlayerPed.Position, 25f);
-                
-                if (closestDownedOrInjuredPed == null)
-                {
-                    ClientUtilities.Tooltip("~r~Failed to find ped nearby.~s~");
-                    return;
-                }
-                
-                Vector3 randomLocation = FindRandomPointInSpace(PlayerPedId());
-                Vector3 spawnLocation = Vector3.Zero;
-                float heading = -4443.44f;
-                bool found = GetClosestVehicleNodeWithHeading(randomLocation.X, randomLocation.Y, randomLocation.Z, ref spawnLocation, ref heading, 1, 3.0f, 0);
+                    Ped? closestDownedOrInjuredPed = await ClientUtilities.GetNearestDownedOrInjuredPed(Game.PlayerPed.Position, 25f);
 
-                if (!found)
-                {
-                    ClientUtilities.Tooltip("~r~Medical services failed to respond and has been canceled, please try again!~s~");
-                    return;
-                };
-
-                Vehicle ambulance = await World.CreateVehicle(new Model("ambulance"), spawnLocation, heading);
-                Ped paramedic = await World.CreatePed(new Model("s_m_m_paramedic_01"), spawnLocation, heading);
-                paramedic.SetIntoVehicle(ambulance, VehicleSeat.Driver);
-                paramedic.BlockPermanentEvents = true;
-                Vector3 roadLocation = Vector3.Zero;
-                found = GetClosestVehicleNode(closestDownedOrInjuredPed.Position.X, closestDownedOrInjuredPed.Position.Y, closestDownedOrInjuredPed.Position.Z, ref roadLocation, 1, 3.0f, 0);
-                if (!found)
-                {
-                    ClientUtilities.Tooltip("~r~Medical services failed to respond and has been canceled, please try again!~s~");
-                    ambulance.Delete();
-                    paramedic.Delete();
-                    return;
-                }
-                Vector3 target = Vector3.Zero;
-                found = GetPointOnRoadSide(roadLocation.X, roadLocation.Y, roadLocation.Z, 3, ref target);
-                if (!found)
-                {
-                    ClientUtilities.Tooltip("~r~Medical services failed to respond and has been canceled, please try again!~s~");
-                    ambulance.Delete();
-                    paramedic.Delete();
-                    return;
-                };
-                
-                paramedic.Task.DriveTo(ambulance, target, 15f, 50f * 2.236936f, 787326);
-                ambulance.IsSirenActive = true;
-                ClientUtilities.Tooltip("~g~Medical services are on the way!~s~");
-                int timeoutTimer = 0;
-                bool timedOut = false;
-                
-                while (ambulance.Position.DistanceToSquared(target) > 250f)
-                {
-                    await BaseScript.Delay(250);
-                    timeoutTimer += 250;
-                    if (timeoutTimer > 90000)
+                    if (closestDownedOrInjuredPed == null)
                     {
-                        timedOut = true;
+                        ClientUtilities.Tooltip("~r~Failed to find ped nearby.~s~");
+                        return;
+                    }
+
+                    Vector3 randomLocation = FindRandomPointInSpace(PlayerPedId());
+                    Vector3 spawnLocation = Vector3.Zero;
+                    float heading = -4443.44f;
+                    bool found = GetClosestVehicleNodeWithHeading(randomLocation.X, randomLocation.Y, randomLocation.Z, ref spawnLocation, ref heading, 1, 3.0f, 0);
+
+                    if (!found)
+                    {
                         ClientUtilities.Tooltip("~r~Medical services failed to respond and has been canceled, please try again!~s~");
-                        break;
+                        return;
                     }
-                }
 
-                if (timedOut)
-                {
-                    ambulance.Delete();
-                    paramedic.Delete();
-                    return;
-                }
+                    ;
 
-                await BaseScript.Delay(1000);
-                paramedic.Task.ClearAll();
-                ambulance.IsSirenActive = false;
-                paramedic.Task.LeaveVehicle();
-                paramedic.Task.GoTo(closestDownedOrInjuredPed);
-                
-                while (paramedic.Position.DistanceToSquared(closestDownedOrInjuredPed.Position) > 2.4f)
-                {
-                    await BaseScript.Delay(15);
-                }
-
-                paramedic.Task.ClearAll();
-                paramedic.Task.TurnTo(closestDownedOrInjuredPed);
-                await BaseScript.Delay(400);
-                paramedic.Task.StartScenario("CODE_HUMAN_MEDIC_TEND_TO_DEAD", paramedic.Position);
-                Task<List<Ped>> search = ClientUtilities.GetAllNearbyDownedOrInjuredPed(paramedic.Position, 25f, true, closestDownedOrInjuredPed.Handle);
-                await BaseScript.Delay(10000);
-                if (new Random().Next(0, 10) < 5)
-                {
-                    await World.CreatePed(closestDownedOrInjuredPed.Model, closestDownedOrInjuredPed.Position, closestDownedOrInjuredPed.Heading);
-                    closestDownedOrInjuredPed.Delete();
-                    paramedic.Task.ClearAll();
-                    saved++;
-                }
-                else
-                {
-                    paramedic.Task.ClearAll();
-                    notSaved++;
-                }
-
-                List<Ped> peds = await search;
-                
-                if (peds.Count == 0)
-                {
-                    if (saved == 0)
+                    ambulance = await World.CreateVehicle(new Model("ambulance"), spawnLocation, heading);
+                    paramedic = await World.CreatePed(new Model("s_m_m_paramedic_01"), spawnLocation, heading);
+                    paramedic.SetIntoVehicle(ambulance, VehicleSeat.Driver);
+                    paramedic.BlockPermanentEvents = true;
+                    Vector3 roadLocation = Vector3.Zero;
+                    found = GetClosestVehicleNode(closestDownedOrInjuredPed.Position.X, closestDownedOrInjuredPed.Position.Y, closestDownedOrInjuredPed.Position.Z, ref roadLocation, 1, 3.0f, 0);
+                    if (!found)
                     {
-                        ClientUtilities.Tooltip("~r~Failed to revive ped.~s~");
+                        ClientUtilities.Tooltip("~r~Medical services failed to respond and has been canceled, please try again!~s~");
+                        ambulance.Delete();
+                        paramedic.Delete();
+                        return;
                     }
-                    else
+
+                    if (MedicalServicesShouldCancel)
                     {
-                        ClientUtilities.Tooltip("~g~Successfully revived ped.~s~");
-                    }
-                    paramedic.Task.EnterVehicle(ambulance, VehicleSeat.Driver, 10, 0.5f, 1);
-                    paramedic.Task.CruiseWithVehicle(ambulance, 30f * 2.236936f, 508);
-                    await BaseScript.Delay(5000);
-                    paramedic.MarkAsNoLongerNeeded();
-                    ambulance.MarkAsNoLongerNeeded();
-                    return;
-                }
-                
-                foreach (Ped downedPed in peds)
-                {
-                    paramedic.Task.GoTo(downedPed);
-                
-                    while (paramedic.Position.DistanceToSquared(downedPed.Position) > 2.4f)
-                    {
-                        await BaseScript.Delay(15);
+                        MedicalServicesActive = false;
+                        MedicalServicesShouldCancel = false;
+                        return;
                     }
                     
+                    Vector3 target = Vector3.Zero;
+                    found = GetPointOnRoadSide(roadLocation.X, roadLocation.Y, roadLocation.Z, 3, ref target);
+                    if (!found)
+                    {
+                        ClientUtilities.Tooltip("~r~Medical services failed to respond and has been canceled, please try again!~s~");
+                        ambulance.Delete();
+                        paramedic.Delete();
+                        return;
+                    }
+                    
+                    if (MedicalServicesShouldCancel)
+                    {
+                        MedicalServicesActive = false;
+                        MedicalServicesShouldCancel = false;
+                        return;
+                    }
+
+                    paramedic.Task.DriveTo(ambulance, target, 15f, 50f * 2.236936f, 787326);
+                    ambulance.IsSirenActive = true;
+                    ClientUtilities.Tooltip("~g~Medical services are on the way!~s~");
+                    int timeoutTimer = 0;
+                    bool timedOut = false;
+
+                    while (ambulance.Position.DistanceToSquared(target) > 250f)
+                    {
+                        await BaseScript.Delay(250);
+                        timeoutTimer += 250;
+                        if (timeoutTimer > 90000)
+                        {
+                            timedOut = true;
+                            ClientUtilities.Tooltip("~r~Medical services failed to respond and has been canceled, please try again!~s~");
+                            break;
+                        }
+                        if (MedicalServicesShouldCancel)
+                        {
+                            MedicalServicesActive = false;
+                            MedicalServicesShouldCancel = false;
+                            return;
+                        }
+                    }
+
+                    if (timedOut)
+                    {
+                        ambulance.Delete();
+                        paramedic.Delete();
+                        return;
+                    }
+
+                    await BaseScript.Delay(1000);
+                    paramedic.Task.ClearAll();
+                    ambulance.IsSirenActive = false;
+                    paramedic.Task.LeaveVehicle();
+                    paramedic.Task.GoTo(closestDownedOrInjuredPed);
+
+                    while (paramedic.Position.DistanceToSquared(closestDownedOrInjuredPed.Position) > 2.4f)
+                    {
+                        await BaseScript.Delay(15);
+                        if (MedicalServicesShouldCancel)
+                        {
+                            MedicalServicesActive = false;
+                            MedicalServicesShouldCancel = false;
+                            return;
+                        }
+                    }
+
                     paramedic.Task.ClearAll();
                     paramedic.Task.TurnTo(closestDownedOrInjuredPed);
+                    await BaseScript.Delay(400);
                     paramedic.Task.StartScenario("CODE_HUMAN_MEDIC_TEND_TO_DEAD", paramedic.Position);
+                    Task<List<Ped>> search = ClientUtilities.GetAllNearbyDownedOrInjuredPed(paramedic.Position, 25f, true, closestDownedOrInjuredPed.Handle);
                     await BaseScript.Delay(10000);
-                    if (downedPed.IsPlayer)
-                    {
-                        
-                    }
-                    else if (new Random().Next(0, 10) < 5)
+                    if (new Random().Next(0, 10) < 5)
                     {
                         await World.CreatePed(closestDownedOrInjuredPed.Model, closestDownedOrInjuredPed.Position, closestDownedOrInjuredPed.Heading);
-                        downedPed.Delete();
+                        closestDownedOrInjuredPed.Delete();
                         paramedic.Task.ClearAll();
                         saved++;
                     }
@@ -425,14 +416,98 @@ internal static class MenuManager
                         paramedic.Task.ClearAll();
                         notSaved++;
                     }
+
+                    List<Ped> peds = await search;
+                    
+                    if (MedicalServicesShouldCancel)
+                    {
+                        MedicalServicesActive = false;
+                        MedicalServicesShouldCancel = false;
+                        return;
+                    }
+
+                    if (peds.Count == 0)
+                    {
+                        if (saved == 0)
+                        {
+                            ClientUtilities.Tooltip("~r~Failed to revive ped.~s~");
+                        }
+                        else
+                        {
+                            ClientUtilities.Tooltip("~g~Successfully revived ped.~s~");
+                        }
+
+                        paramedic.Task.EnterVehicle(ambulance, VehicleSeat.Driver, 10, 0.5f, 1);
+                        paramedic.Task.CruiseWithVehicle(ambulance, 30f * 2.236936f, 508);
+                        await BaseScript.Delay(5000);
+                        paramedic.MarkAsNoLongerNeeded();
+                        ambulance.MarkAsNoLongerNeeded();
+                        return;
+                    }
+
+                    foreach (Ped downedPed in peds)
+                    {
+                        paramedic.Task.GoTo(downedPed);
+
+                        while (paramedic.Position.DistanceToSquared(downedPed.Position) > 2.4f)
+                        {
+                            await BaseScript.Delay(15);
+                        }
+
+                        paramedic.Task.ClearAll();
+                        paramedic.Task.TurnTo(closestDownedOrInjuredPed);
+                        paramedic.Task.StartScenario("CODE_HUMAN_MEDIC_TEND_TO_DEAD", paramedic.Position);
+                        await BaseScript.Delay(10000);
+                        if (downedPed.IsPlayer)
+                        {
+
+                        }
+                        else if (new Random().Next(0, 10) < 5)
+                        {
+                            await World.CreatePed(closestDownedOrInjuredPed.Model, closestDownedOrInjuredPed.Position, closestDownedOrInjuredPed.Heading);
+                            downedPed.Delete();
+                            paramedic.Task.ClearAll();
+                            saved++;
+                        }
+                        else
+                        {
+                            paramedic.Task.ClearAll();
+                            notSaved++;
+                        }
+                        
+                        if (MedicalServicesShouldCancel)
+                        {
+                            MedicalServicesActive = false;
+                            MedicalServicesShouldCancel = false;
+                            return;
+                        }
+                    }
+
+                    ClientUtilities.Notification($"~g~Saved:~s~ {saved}~n~~r~Deceased:~s~ {notSaved}", true, 140, "CHAR_MEDIC", false, 0, "San Andreas Medical Service", "After Action Report");
+                    paramedic.Task.EnterVehicle(ambulance, VehicleSeat.Driver, 10, 1f, 1);
+                    paramedic.Task.CruiseWithVehicle(ambulance, 30f * 2.236936f, 511);
+                    await BaseScript.Delay(5000);
+                    paramedic.MarkAsNoLongerNeeded();
+                    ambulance.MarkAsNoLongerNeeded();
                 }
-                
-                ClientUtilities.Notification($"~g~Saved:~s~ {saved}~n~~r~Deceased:~s~ {notSaved}", true, 140, "CHAR_MEDIC", false, 0, "San Andreas Medical Service", "After Action Report");
-                paramedic.Task.EnterVehicle(ambulance, VehicleSeat.Driver, 10, 1f, 1);
-                paramedic.Task.CruiseWithVehicle(ambulance, 30f * 2.236936f, 511);
-                await BaseScript.Delay(5000);
-                paramedic.MarkAsNoLongerNeeded();
-                ambulance.MarkAsNoLongerNeeded();
+                else
+                {
+                    MedicalServicesShouldCancel = true;
+                    ClientUtilities.Tooltip("~r~Medical Services request canceled.~s~");
+                    
+                    if (paramedic != null && ambulance != null)
+                    {
+                        paramedic.BlockPermanentEvents = false;
+                        paramedic.Task.CruiseWithVehicle(ambulance, 30f * 2.236936f, 511);
+                        ambulance.IsSirenActive = false;
+                    }
+                    
+                    if (paramedic != null) paramedic.MarkAsNoLongerNeeded();
+                    if (ambulance != null) ambulance.MarkAsNoLongerNeeded();
+                    
+                    item.Text = "Request Medical Services";
+                    item.Description = "Request a paramedic to your location";
+                }
             }
         }; 
         

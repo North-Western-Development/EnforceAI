@@ -64,6 +64,7 @@ namespace EnforceAI.Client
                 if(ped.HealthFloat > (ped.MaxHealthFloat * 0.75f) && !ped.IsDead) continue;
                 if(ped.Position.DistanceToSquared(coords) > nearestDistance && nearestPed != null) continue;
                 nearestPed = ped;
+                nearestDistance = ped.Position.DistanceToSquared(coords);
             }
             return nearestPed;
         }
@@ -83,6 +84,25 @@ namespace EnforceAI.Client
                 peds.Add(ped);
             }
             return peds;
+        }
+        
+        internal static async Task<Ped?> GetNearestLivingPed(Vector3 coords, float maxDistanceSqrd, bool allowPlayer = false)
+        {
+            float nearestDistance = float.MaxValue;
+            Ped? nearestPed = null;
+
+            foreach (Ped ped in World.GetAllPeds())
+            {
+                await BaseScript.Delay(1);
+                if(ped == null) continue;
+                if(ped.IsPlayer && !allowPlayer) continue;
+                if(ped.Position.DistanceToSquared(coords) > maxDistanceSqrd) continue;
+                if(ped.IsDead) continue;
+                if(ped.Position.DistanceToSquared(coords) > nearestDistance && nearestPed != null) continue;
+                nearestPed = ped;
+                nearestDistance = ped.Position.DistanceToSquared(coords);
+            }
+            return nearestPed;
         }
     }
 }
