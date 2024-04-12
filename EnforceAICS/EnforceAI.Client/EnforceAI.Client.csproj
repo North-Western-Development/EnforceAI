@@ -1,78 +1,67 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
-            Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
-    <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{53199F51-BAFB-4553-BB06-52FD5639303D}</ProjectGuid>
-        <OutputType>Library</OutputType>
-        <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>EnforceAI.Client</RootNamespace>
-        <AssemblyName>EnforceAI.Client.net</AssemblyName>
-        <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-        <FileAlignment>512</FileAlignment>
-        <LangVersion>10</LangVersion>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>bin\Debug\</OutputPath>
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>bin\Release\</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-    <ItemGroup>
-        <Reference Include="CitizenFX.Core.Client, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-          <HintPath>..\packages\CitizenFX.Core.Client.1.0.7878\lib\net45\CitizenFX.Core.Client.dll</HintPath>
-        </Reference>
-        <Reference Include="MenuAPI">
-          <HintPath>..\..\..\..\Users\JacksonAbney\RiderProjects\MenuAPI-Updated\MenuAPI\bin\Release FiveM\net452\MenuAPI.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.CSharp" />
-        <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-          <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-        </Reference>
-        <Reference Include="System"/>
-        <Reference Include="System.Core"/>
-        <Reference Include="System.Data"/>
-        <Reference Include="System.Xml"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="ClientUtilities.cs" />
-        <Compile Include="EnforceAI.cs" />
-        <Compile Include="MenuManager.cs" />
-        <Compile Include="Properties\AssemblyInfo.cs"/>
-        <Compile Include="PropManager.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Include="packages.config" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\EnforceAI.Common\EnforceAI.Common.csproj">
-        <Project>{b99f4762-0d94-4974-8715-22ac3c90c2d9}</Project>
-        <Name>EnforceAI.Common</Name>
-      </ProjectReference>
-    </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
-    <Target Name="BeforeBuild">
-    </Target>
-    <Target Name="AfterBuild">
-    </Target>
-    -->
-
+﻿<Project Sdk="CitizenFX.Sdk.Client/0.2.3">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AssemblyName>EnforceAI.Client.net</AssemblyName>
+    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyTitle>EnforceAI.Client</AssemblyTitle>
+    <Product>EnforceAI.Client</Product>
+    <Copyright>Copyright ©  2024</Copyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CitizenFX.Core.Client" Version="1.0.7900" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MenuAPI">
+      <HintPath>..\..\..\..\Users\JacksonAbney\RiderProjects\MenuAPI-Updated\MenuAPI\bin\Release FiveM\net452\MenuAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\dist\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ReferencePathWithRefAssemblies Update="C:\Users\JacksonAbney\.nuget\packages\microsoft.csharp\4.7.0\ref\netstandard2.0\Microsoft.CSharp.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\EnforceAI\Common\DataHolders\Licenses.cs">
+      <Link>Common\DataHolders\Licenses.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Enums\Gender.cs">
+      <Link>Common\Enums\Gender.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Enums\LicenseStatus.cs">
+      <Link>Common\Enums\LicenseStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Interfaces\ILicense.cs">
+      <Link>Common\Interfaces\ILicense.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Types\DriversLicense.cs">
+      <Link>Common\Types\DriversLicense.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Types\FishingLicense.cs">
+      <Link>Common\Types\FishingLicense.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Types\HuntingLicense.cs">
+      <Link>Common\Types\HuntingLicense.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Types\IPedData.cs">
+      <Link>Common\Types\IPedData.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Types\PilotsLicense.cs">
+      <Link>Common\Types\PilotsLicense.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Types\VehicleData.cs">
+      <Link>Common\Types\VehicleData.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Types\WeaponsLicense.cs">
+      <Link>Common\Types\WeaponsLicense.cs</Link>
+    </Compile>
+    <Compile Include="..\EnforceAI\Common\Utilities.cs">
+      <Link>Common\Utilities.cs</Link>
+    </Compile>
+  </ItemGroup>
 </Project>

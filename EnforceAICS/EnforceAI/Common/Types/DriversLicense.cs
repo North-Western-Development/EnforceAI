@@ -1,7 +1,7 @@
 ﻿using System;
-using EnforceAI.Common.Interfaces;
+using EnforceAI.Common.Enums;
 
-namespace EnforceAI.Common;
+namespace EnforceAI.Common.Types;
 
 public class DriversLicense : ILicense
 {

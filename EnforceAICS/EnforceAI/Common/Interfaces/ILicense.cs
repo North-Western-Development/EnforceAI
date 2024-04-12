@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnforceAI.Common.Interfaces;
+namespace EnforceAI.Common.Enums;
 
 public interface ILicense
 {

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
+using EnforceAI.Common;
+using EnforceAI.Server.Types;
 using MenuAPI;
-
+using Newtonsoft.Json;
 using static CitizenFX.Core.Native.API;
 using static EnforceAI.Common.Utilities;
 
@@ -110,6 +112,18 @@ internal static class MenuManager
         return dispatchMenu;
     }
 
+    //TODO: ADD ABILITY TO OPEN MENU
+    internal static Menu CreateNearbyPedMenu()
+    {
+        Menu nearbyPedMenu = new Menu("Ped Interaction");
+
+        MenuListItem requestLicenseItem = new MenuListItem("Request License", new List<string>() { "Driver's", "Weapons", "Hunting", "Fishing", "Pilot's" }, 0, "Request the specified license from the ped");
+        
+        nearbyPedMenu.AddMenuItem(requestLicenseItem);
+
+        return nearbyPedMenu;
+    }
+
     #region Main Menu Sub Menus
     private static Menu CreateDebugMenu()
     {
@@ -124,8 +138,13 @@ internal static class MenuManager
         calloutNotification.LeftIcon = MenuItem.Icon.MISSION_STAR;
 
         debugMenu.AddMenuItem(calloutNotification);
+        
+        MenuItem pedDataItem = new MenuItem("Get nearest ped data", "Requests and displays the nearest ped's data from the server");
+        pedDataItem.LeftIcon = MenuItem.Icon.INV_DATA;
 
-        debugMenu.OnItemSelect += (menu, selectedItem, itemIndex) =>
+        debugMenu.AddMenuItem(pedDataItem);
+
+        debugMenu.OnItemSelect += async (menu, selectedItem, itemIndex) =>
         {
             if (selectedItem == toggleDutyStatus)
             {
@@ -134,6 +153,43 @@ internal static class MenuManager
             else if (selectedItem == calloutNotification)
             {
                 ClientUtilities.Notification("~b~Type:~s~~o~ Officer in Distress (10-99)~s~~n~~g~Location:~s~ ~p~Del Perro Freeway, Los Santos~s~", true, 140, "CHAR_CALL911", true, 0, EnforceAI.Instance.Department + " Dispatch", "Call Received");
+            }
+            else if (selectedItem == pedDataItem)
+            {
+                Ped? ped = await ClientUtilities.GetNearestLivingPed(Game.PlayerPed.Position, 25f);
+                if (ped == null)
+                {
+                    ClientUtilities.Tooltip("~r~No ped close enough!~s~");
+                    return;
+                }
+                
+                Task<string?> callbackRegistration = EnforceAI.RegisterAwaitableCallback("ReturnPedData:" + ped.NetworkId, 5000);
+                BaseScript.TriggerServerEvent("EnforceAI::server:GetPedData", ped.NetworkId);
+                string? pedDataResult = await callbackRegistration;
+
+                if (pedDataResult == null)
+                {
+                    ClientUtilities.Tooltip("~r~A timeout occurred resulting in a timeout!~s~");
+                    return;
+                }
+
+                Debug.WriteLine(pedDataResult);
+                try
+                {
+                    PedData data = JsonConvert.DeserializeObject<PedData>(pedDataResult);
+                    
+                    if (data == null)
+                    {
+                        ClientUtilities.Notification("~r~" + pedDataResult + "~s~");
+                        return;
+                    }
+                    
+                    ClientUtilities.Notification("~b~Name:~s~ " + data.GetName() + "~n~" + "Date of Birth:~s~ " + data.GetDateOfBirthString());
+                }
+                catch
+                {
+                    ClientUtilities.Notification("~r~" + pedDataResult + "~s~");
+                }
             }
         };
 
@@ -460,7 +516,7 @@ internal static class MenuManager
                         await BaseScript.Delay(10000);
                         if (downedPed.IsPlayer)
                         {
-
+                            //TODO: ASK SERVER TO HEAL PLAYER
                         }
                         else if (new Random().Next(0, 10) < 5)
                         {

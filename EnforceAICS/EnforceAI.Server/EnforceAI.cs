@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using EnforceAI.Common;
+using EnforceAI.Server.Types;
 using Newtonsoft.Json;
 using static CitizenFX.Core.Native.API;
 using static EnforceAI.Common.Utilities;
@@ -46,6 +47,21 @@ namespace EnforceAI.Server
                     }
                 }
             });
+            EventHandlers["EnforceAI::server:GetPedData"] += new Action<Player, int>(([FromSource] client, netId) =>
+            {
+                Ped ped = (Ped)Entity.FromNetworkId(netId);
+                if (ped == null)
+                {
+                    TriggerClientEvent(client, "EnforceAI::client:ReturnPedData:" + netId, "NO SUCH NETWORK ID");
+                };
+                PedData data = new PedData(Configs.Names);
+                data.AssociatePed(ped);
+                Print("EnforceAI::client:ReturnPedData:" + netId);
+                File.WriteAllText(GetResourcePath(GetCurrentResourceName()) + "\\test.txt", JsonConvert.SerializeObject(data));
+                PedData test = JsonConvert.DeserializeObject<PedData>(JsonConvert.SerializeObject(data));
+                Print(test);
+                TriggerClientEvent(client, "EnforceAI::client:ReturnPedData:" + netId, JsonConvert.SerializeObject(data));
+            });
 
             Tick += PlayerBlips;
             
@@ -60,14 +76,14 @@ namespace EnforceAI.Server
             Print("Developed by North Western Development and Contributors");
             Print($"Version: {typeof(EnforceAI).Assembly.GetName().Version}");
 
-            Configs.Names = JsonConvert.DeserializeObject<Names>(File.ReadAllText( GetResourcePath(GetCurrentResourceName()) + "\\configs\\names.json"));
+            Configs.Names = JsonConvert.DeserializeObject<Names>(File.ReadAllText(GetResourcePath(GetCurrentResourceName()) + "\\configs\\names.json"));
 
             Configs.Names.FirstNames.Male = Configs.Names.FirstNames.Male.Concat(Configs.Names.FirstNames.Neutral).ToList();
             Configs.Names.FirstNames.Female = Configs.Names.FirstNames.Female.Concat(Configs.Names.FirstNames.Neutral).ToList();
             
             PedData data = new PedData(Configs.Names);
             
-            Print(data.GetName() + " - " + data.Gender + " - " + data.DateOfBirth.ToString("dd MMMM yyyy") + " - " + data.Age);
+            Print(data);
         }
 
         private async Task PlayerBlips()

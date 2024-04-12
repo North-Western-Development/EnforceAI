@@ -1,10 +1,8 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnforceAI.Client", "EnforceAI.Client\EnforceAI.Client.csproj", "{53199F51-BAFB-4553-BB06-52FD5639303D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnforceAI.Client", "EnforceAI.Client\EnforceAI.Client.csproj", "{53199F51-BAFB-4553-BB06-52FD5639303D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnforceAI.Common", "EnforceAI.Common\EnforceAI.Common.csproj", "{B99F4762-0D94-4974-8715-22AC3C90C2D9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnforceAI.Server", "EnforceAI.Server\EnforceAI.Server.csproj", "{2E37A4D4-2A62-4A31-BD10-4820944E252F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnforceAI.Server", "EnforceAI.Server\EnforceAI.Server.csproj", "{2E37A4D4-2A62-4A31-BD10-4820944E252F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,10 +14,6 @@ Global
 		{53199F51-BAFB-4553-BB06-52FD5639303D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53199F51-BAFB-4553-BB06-52FD5639303D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53199F51-BAFB-4553-BB06-52FD5639303D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B99F4762-0D94-4974-8715-22AC3C90C2D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B99F4762-0D94-4974-8715-22AC3C90C2D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B99F4762-0D94-4974-8715-22AC3C90C2D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B99F4762-0D94-4974-8715-22AC3C90C2D9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2E37A4D4-2A62-4A31-BD10-4820944E252F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E37A4D4-2A62-4A31-BD10-4820944E252F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E37A4D4-2A62-4A31-BD10-4820944E252F}.Release|Any CPU.ActiveCfg = Release|Any CPU

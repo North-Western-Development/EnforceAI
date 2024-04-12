@@ -1,15 +1,15 @@
 ﻿using System;
-using EnforceAI.Common.Interfaces;
+using EnforceAI.Common.Enums;
 
-namespace EnforceAI.Common;
+namespace EnforceAI.Common.Types;
 
-public class HuntingLicense : ILicense
+public class PilotsLicense : ILicense
 {
     public DateTime Expiration { get; }
     public DateTime Issued { get; }
     public LicenseStatus Status { get; }
-    
-    internal HuntingLicense()
+
+    internal PilotsLicense()
     {
         
     }

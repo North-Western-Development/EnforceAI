@@ -1,4 +1,6 @@
-﻿namespace EnforceAI.Common.Interfaces;
+﻿using EnforceAI.Common.Types;
+
+namespace EnforceAI.Common.DataHolders;
 
 public struct Licenses
 {

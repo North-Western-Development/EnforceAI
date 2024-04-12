@@ -14,7 +14,6 @@ server_script {
 }
 
 files {
-    'EnforceAI.Common.dll',
     'MenuAPI.dll',
     'Newtonsoft.Json.dll'
 }
