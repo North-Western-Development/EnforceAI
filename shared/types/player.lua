@@ -2,16 +2,22 @@ Player = {}
 Player.__index = Player
 
 Player.id = 0
+Player.source = 0
 Player.Name = ""
 Player.DutyStatus = false
 
-function Player:new(database, name)
+function Player:new(database, name, source)
     if not IsDuplicityVersion() then error("Player can only be created on the server side!") end
     local newObject = setmetatable({}, Player)
 
     newObject.Name = name
 
     newObject.id = database:GetNext(Datatypes.PLAYER)
+    newObject.source = source
+
+    database:AddOrUpdate(Datatypes.PLAYER, newObject.id, newObject)
+
+    TriggerClientEvent("EnforceAI::client:DataUpdate", -1, Datatypes.PLAYER, newObject)
 
     return newObject
 end

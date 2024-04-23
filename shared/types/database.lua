@@ -110,3 +110,13 @@ function Database:LookupPedData(firstname, middleinitial, lastname, dob, gender)
 
     return nil
 end
+
+function Database:GetPlayerForSource(source)
+    for _, v in pairs(self.Players) do
+        if v.source == source then
+            return v
+        end
+    end
+
+    return nil
+end

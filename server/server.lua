@@ -3,7 +3,7 @@ ServerDatabase = Database:new()
 
 RegisterNetEvent("EnforceAI::server::login", function(data, toCall)
     local playerData = QBCore.Functions.GetPlayer(source).PlayerData
-    local player = Player:new(ServerDatabase, playerData.charinfo.firstname .. " " .. playerData.charinfo.lastname)
+    local player = Player:new(ServerDatabase, playerData.charinfo.firstname .. " " .. playerData.charinfo.lastname, source)
     TriggerClientEvent(toCall, source, { player = player })
 end)
 
@@ -64,5 +64,27 @@ AddEventHandler("onResourceStop", function (resource)
 
     for _, v in pairs(ServerDatabase.Props) do
         DeleteEntity(NetworkGetEntityFromNetworkId(v.NetworkId))
+    end
+end)
+
+Citizen.CreateThread(function()
+    if Configs.EnableOnDutyBlips then
+        while true do
+            local blipData = {}
+            for _, v in pairs(ServerDatabase.Players) do
+                if v.DutyStatus == true then
+                    local player = GetPlayerPed(v.source)
+                    blipData[v.source] = {
+                        name = v.Name,
+                        coords = GetEntityCoords(player),
+                        rotation = GetEntityHeading(player),
+                    }
+                end
+            end
+
+            TriggerClientEvent("EnforceAI::client::PlayerBlips", -1, blipData)
+
+            Wait(Configs.TimeBetweenBlipUpdates)
+        end
     end
 end)

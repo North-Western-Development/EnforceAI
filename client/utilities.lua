@@ -36,6 +36,21 @@ NearestLivingPed = function(pos, radius, allowPlayer)
     return ped
 end
 
+CreateBlip = function(name, coords, heading, color, scale, displayType, sprite, shortRange)
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+    SetBlipSprite(blip, sprite);
+    SetBlipDisplay(blip, displayType);
+    SetBlipScale(blip, scale);
+    SetBlipColour(blip, color);
+    SetBlipRotation(blip, heading);
+    SetBlipAsShortRange(blip, shortRange or true);
+    BeginTextCommandSetBlipName("STRING");
+    AddTextComponentString(name);
+    EndTextCommandSetBlipName(blip);
+
+    return blip
+end
+
 SetupMenus = function(mainmenu, scenemenu, dispatchmenu)
     -- MAIN MENU --
     local dutyCheck = mainmenu:AddCheckbox({ icon = '💼', label = "Set Duty Status", value = false })

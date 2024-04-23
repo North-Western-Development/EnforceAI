@@ -10,6 +10,7 @@ client_scripts {
     "@menuv/menuv.lua",
     "client/utilities.lua",
     "client/propmanager.lua",
+    "client/datahandling.lua",
     "client/client.lua"
 }
 

@@ -6,4 +6,6 @@ Configs = {
     },
     AllowOtherGender = true, -- Setting false will disable the use of "Other" as a gender
     AllowTransgender = true, -- Setting false will disable having male peds be set as female or vice versa to the best of the script's ability (some in-game peds are gendered wrong according to CFX's documentation)
+    EnableOnDutyBlips = true,
+    TimeBetweenBlipUpdates = 250, -- The time between updating on duty blip locations in milliseconds, defaults to 250 (0.25 seconds)
 }
