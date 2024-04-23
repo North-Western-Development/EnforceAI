@@ -4,7 +4,8 @@ PropManagerState = {
     SpawnModel = Configs.Props[1],
     RotateLeft = false,
     RotateRight = false,
-    RotateFaster = false
+    RotateFaster = false,
+    DoubleFast = false
 }
 
 local propSpawned = false
@@ -47,17 +48,25 @@ Citizen.CreateThread(function ()
                 if (PropManagerState.RotateLeft and PropManagerState.RotateRight) or (not PropManagerState.RotateLeft and not PropManagerState.RotateRight) then
                     SetEntityRotation(currentPropHandle, rot.x, rot.y, currentYaw, 2, false);
                 else
+                    local multiplier = 1
+                    if PropManagerState.RotateFaster then
+                        multiplier = 5
+                    end
+                    if PropManagerState.DoubleFast then
+                        multiplier = multiplier * 2
+                    end
+
                     if PropManagerState.RotateRight then
-                        if currentYaw + (0.2 * (PropManagerState.RotateFaster and 5 or 1)) > 360 then
+                        if currentYaw + (0.2 * multiplier) > 360 then
                             currentYaw = 0;
                         end
-                        currentYaw = currentYaw + (0.2 * (RotateFaster and 5 or 1));
+                        currentYaw = currentYaw + (0.2 * multiplier);
                         SetEntityRotation(currentPropHandle, rot.x, rot.y, currentYaw, 2, false);
                     elseif PropManagerState.RotateLeft then
-                        if currentYaw - (0.2 * (PropManagerState.RotateFaster and 5 or 1)) < 0 then
+                        if currentYaw - (0.2 * multiplier) < 0 then
                             currentYaw = 360;
                         end
-                        currentYaw = currentYaw - (0.2 * (RotateFaster and 5 or 1));
+                        currentYaw = currentYaw - (0.2 * multiplier);
                         SetEntityRotation(currentPropHandle, rot.x, rot.y, currentYaw, 2, false);
                     end
                 end

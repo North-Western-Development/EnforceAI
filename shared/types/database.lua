@@ -1,3 +1,16 @@
+local genderConversions = {
+    DatabaseToRuntime = {
+        m = 0,
+        f = 1,
+        x = 2
+    },
+    RuntimeToDatabase = {
+        [0] = 'm',
+        [1] = 'f',
+        [2] = 'x'
+    }
+}
+
 Database = {}
 Database.__index = Database
 
@@ -74,4 +87,26 @@ function Database:GetAllPropsForSource(source)
     end
 
     return props
+end
+
+function Database:GetDataForPedNetId(netid)
+    for k, v in pairs(self.Peds) do
+        if v.netid == netid then
+            return k;
+        end
+    end
+
+    return nil
+end
+
+function Database:LookupPedData(firstname, middleinitial, lastname, dob, gender)
+    gender = genderConversions.DatabaseToRuntime[gender]
+
+    for k, v in pairs(self.Peds) do
+        if v.FirstName == firstname and v.MiddleInitial == middleinitial and v.LastName == lastname and v.DateOfBirth == dob and v.Gender == gender then
+            return v
+        end
+    end
+
+    return nil
 end
