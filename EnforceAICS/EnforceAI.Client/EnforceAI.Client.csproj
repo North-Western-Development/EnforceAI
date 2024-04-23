@@ -1,6 +1,7 @@
-﻿<Project Sdk="CitizenFX.Sdk.Client/0.2.3">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
+    <TargetFramework>net452</TargetFramework>
     <AssemblyName>EnforceAI.Client.net</AssemblyName>
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
@@ -20,6 +21,7 @@
   <ItemGroup>
     <PackageReference Include="CitizenFX.Core.Client" Version="1.0.7900" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MenuAPI">

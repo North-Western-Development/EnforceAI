@@ -12,7 +12,12 @@ internal static class PropManager
     {
         "prop_roadcone01a",
         "prop_consign_02a",
-        "prop_mp_cone_04"
+        "prop_mp_cone_04",
+        "coffee_vending_machine",
+        "futuristic_vending_machine",
+        "generic_futuristic_vending_machine",
+        "old_vending_machine",
+        "sci_fi_vending"
     };
     
     internal static bool DrawGhost;

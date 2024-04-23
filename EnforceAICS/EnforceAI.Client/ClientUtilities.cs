@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
@@ -57,15 +58,17 @@ namespace EnforceAI.Client
 
             foreach (Ped ped in World.GetAllPeds())
             {
-                await BaseScript.Delay(1);
+                await BaseScript.Delay(0);
                 if(ped == null) continue;
+                if(!ped.IsHuman) continue;
                 if(ped.IsPlayer && !allowPlayer) continue;
-                if(ped.Position.DistanceToSquared(coords) > maxDistanceSqrd) continue;
                 if(ped.HealthFloat > (ped.MaxHealthFloat * 0.75f) && !ped.IsDead) continue;
-                if(ped.Position.DistanceToSquared(coords) > nearestDistance && nearestPed != null) continue;
+                float dist = ped.Position.DistanceToSquared2D(coords);
+                if(dist > maxDistanceSqrd || (nearestPed != null && dist > nearestDistance)) continue;
                 nearestPed = ped;
-                nearestDistance = ped.Position.DistanceToSquared(coords);
+                nearestDistance = ped.Position.DistanceToSquared2D(coords);
             }
+            
             return nearestPed;
         }
         
@@ -75,11 +78,12 @@ namespace EnforceAI.Client
             
             foreach (Ped ped in World.GetAllPeds())
             {
-                await BaseScript.Delay(3);
+                await BaseScript.Delay(0);
                 if(ped == null) continue;
                 if(ignoreHandle != null && ped.Handle == ignoreHandle) continue;
+                if(!ped.IsHuman) continue;
                 if(ped.IsPlayer && !allowPlayer) continue;
-                if(ped.Position.DistanceToSquared(coords) > maxDistanceSqrd) continue;
+                if(ped.Position.DistanceToSquared2D(coords) > maxDistanceSqrd) continue;
                 if(ped.HealthFloat > (ped.MaxHealthFloat * 0.75f) && !ped.IsDead) continue;
                 peds.Add(ped);
             }
@@ -90,18 +94,22 @@ namespace EnforceAI.Client
         {
             float nearestDistance = float.MaxValue;
             Ped? nearestPed = null;
-
-            foreach (Ped ped in World.GetAllPeds())
+            Ped?[] peds = World.GetAllPeds();
+            
+            for (int i = 0; i < peds.Length; i++)
             {
-                await BaseScript.Delay(1);
+                Ped? ped = peds[i];
+                await BaseScript.Delay(0);
                 if(ped == null) continue;
+                if(!ped.IsHuman) continue;
                 if(ped.IsPlayer && !allowPlayer) continue;
-                if(ped.Position.DistanceToSquared(coords) > maxDistanceSqrd) continue;
                 if(ped.IsDead) continue;
-                if(ped.Position.DistanceToSquared(coords) > nearestDistance && nearestPed != null) continue;
+                float dist = ped.Position.DistanceToSquared2D(coords);
+                if(dist > maxDistanceSqrd || (nearestPed != null && dist > nearestDistance)) continue;
                 nearestPed = ped;
-                nearestDistance = ped.Position.DistanceToSquared(coords);
+                nearestDistance = ped.Position.DistanceToSquared2D(coords);
             }
+            
             return nearestPed;
         }
     }

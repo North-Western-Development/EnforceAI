@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CitizenFX.Core;
-using EnforceAI.Common;
 using EnforceAI.Server.Types;
 using MenuAPI;
 using Newtonsoft.Json;
 using static CitizenFX.Core.Native.API;
-using static EnforceAI.Common.Utilities;
 
 namespace EnforceAI.Client;
 
@@ -164,12 +161,17 @@ internal static class MenuManager
                 }
                 
                 Task<string?> callbackRegistration = EnforceAI.RegisterAwaitableCallback("ReturnPedData:" + ped.NetworkId, 5000);
+
+                int pedId = NetworkGetEntityFromNetworkId(ped.NetworkId);
+                int headComponentNumber = GetPedDrawableVariation(pedId, 0);
+                int headTextureNumber = GetPedTextureVariation(pedId, 0);
+                
                 BaseScript.TriggerServerEvent("EnforceAI::server:GetPedData", ped.NetworkId, ped.Gender switch
                 {
                     Gender.Male => Common.Enums.Gender.Male,
                     Gender.Female => Common.Enums.Gender.Female,
                     _ => Common.Enums.Gender.Other
-                });
+                }, headComponentNumber, headTextureNumber);
                 string? pedDataResult = await callbackRegistration;
 
                 if (pedDataResult == null)

@@ -54,14 +54,14 @@ namespace EnforceAI.Server
                     }
                 }
             });
-            EventHandlers["EnforceAI::server:GetPedData"] += new Action<Player, int, Gender>(async ([FromSource] client, netId, gender) =>
+            EventHandlers["EnforceAI::server:GetPedData"] += new Action<Player, int, Gender, int, int>(async ([FromSource] client, netId, gender,  headComponent, headTexture) =>
             {
                 Ped ped = (Ped)Entity.FromNetworkId(netId);
                 if (ped == null)
                 {
                     TriggerClientEvent(client, "EnforceAI::client:ReturnPedData:" + netId, "NO SUCH NETWORK ID");
                 };
-                PedData data = await PedDataManager.GetDataForPed(ped, gender);
+                PedData data = await PedDataManager.GetDataForPed(ped, gender, headComponent, headTexture);
                 TriggerClientEvent(client, "EnforceAI::client:ReturnPedData:" + netId, JsonConvert.SerializeObject(data));
             });
 
